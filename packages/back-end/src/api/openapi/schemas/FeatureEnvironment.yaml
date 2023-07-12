@@ -7,7 +7,10 @@ properties:
   enabled:
     type: boolean
   defaultValue:
-    type: string
+    oneOf:
+      - type: string
+      - type: number
+      - type: boolean
   rules:
     type: array
     items:
@@ -25,7 +28,10 @@ properties:
       enabled:
         type: boolean
       defaultValue:
-        type: string
+        oneOf:
+          - type: string
+          - type: number
+          - type: boolean
       rules:
         type: array
         items:

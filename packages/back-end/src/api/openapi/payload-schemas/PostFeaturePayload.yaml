@@ -1,0 +1,41 @@
+type: object
+required:
+  - id
+properties:
+  id:
+    type: string
+    description: A unique key name for the feature. Feature keys can only include letters, numbers, hyphens, and underscores.
+  archived:
+    type: boolean
+  description:
+    type: string
+    description: Description of the feature
+  owner:
+    description: Name of owner of the feature
+    type: string
+  project:
+    type: string
+    description: An associated project ID
+  valueType:
+    type: string
+    enum:
+      - boolean
+      - string
+      - number
+      - json
+    description: The data type of the feature payload
+  defaultValue:
+    oneOf:
+      - type: string
+      - type: number
+      - type: boolean
+  tags:
+    type: array
+    items:
+      type: string
+    description: List of associated tags
+  environments:
+    type: object
+    description: A dictionary of environments that are enabled for this feature. Key of the environment settings object is the name of environment. Environments that are not specified will be disabled by default.
+    additionalProperties:
+      $ref: "../schemas/FeatureEnvironment.yaml"

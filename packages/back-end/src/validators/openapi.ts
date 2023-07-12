@@ -12,8 +12,122 @@ export const listFeaturesValidator = {
   paramsSchema: z.never(),
 };
 
+export const postFeatureValidator = {
+  bodySchema: z.object({"id":z.string().describe("A unique key name for the feature. Feature keys can only include letters, numbers, hyphens, and underscores."),"archived":z.boolean().optional(),"description":z.string().describe("Description of the feature").optional(),"owner":z.string().describe("Name of owner of the feature").optional(),"project":z.string().describe("An associated project ID").optional(),"valueType":z.enum(["boolean","string","number","json"]).describe("The data type of the feature payload").optional(),"defaultValue":z.any().superRefine((x, ctx) => {
+    const schemas = [z.string(),z.number(),z.boolean()];
+    const errors = schemas.reduce(
+      (errors: z.ZodError[], schema) =>
+        ((result) => ("error" in result ? [...errors, result.error] : errors))(
+          schema.safeParse(x)
+        ),
+      []
+    );
+    if (schemas.length - errors.length !== 1) {
+      ctx.addIssue({
+        path: ctx.path,
+        code: "invalid_union",
+        unionErrors: errors,
+        message: "Invalid input: Should pass single schema",
+      });
+    }
+  }).optional(),"tags":z.array(z.string()).describe("List of associated tags").optional(),"environments":z.record(z.object({"enabled":z.boolean(),"defaultValue":z.any().superRefine((x, ctx) => {
+    const schemas = [z.string(),z.number(),z.boolean()];
+    const errors = schemas.reduce(
+      (errors: z.ZodError[], schema) =>
+        ((result) => ("error" in result ? [...errors, result.error] : errors))(
+          schema.safeParse(x)
+        ),
+      []
+    );
+    if (schemas.length - errors.length !== 1) {
+      ctx.addIssue({
+        path: ctx.path,
+        code: "invalid_union",
+        unionErrors: errors,
+        message: "Invalid input: Should pass single schema",
+      });
+    }
+  }),"rules":z.array(z.union([z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string(),"coverage":z.number(),"hashAttribute":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"trackingKey":z.string().optional(),"hashAttribute":z.string().optional(),"namespace":z.any().optional(),"coverage":z.number().optional(),"value":z.array(z.object({"value":z.string(),"weight":z.number(),"name":z.string().optional()})).optional()})])),"definition":z.string().describe("A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model)").optional(),"draft":z.object({"enabled":z.boolean(),"defaultValue":z.any().superRefine((x, ctx) => {
+    const schemas = [z.string(),z.number(),z.boolean()];
+    const errors = schemas.reduce(
+      (errors: z.ZodError[], schema) =>
+        ((result) => ("error" in result ? [...errors, result.error] : errors))(
+          schema.safeParse(x)
+        ),
+      []
+    );
+    if (schemas.length - errors.length !== 1) {
+      ctx.addIssue({
+        path: ctx.path,
+        code: "invalid_union",
+        unionErrors: errors,
+        message: "Invalid input: Should pass single schema",
+      });
+    }
+  }),"rules":z.array(z.union([z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string(),"coverage":z.number(),"hashAttribute":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"trackingKey":z.string().optional(),"hashAttribute":z.string().optional(),"namespace":z.any().optional(),"coverage":z.number().optional(),"value":z.array(z.object({"value":z.string(),"weight":z.number(),"name":z.string().optional()})).optional()})])),"definition":z.string().describe("A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model)").optional()}).optional()})).describe("A dictionary of environments that are enabled for this feature. Key of the environment settings object is the name of environment. Environments that are not specified will be disabled by default.").optional()}).strict(),
+  querySchema: z.never(),
+  paramsSchema: z.never(),
+};
+
 export const getFeatureValidator = {
   bodySchema: z.never(),
+  querySchema: z.never(),
+  paramsSchema: z.object({"id":z.string()}).strict(),
+};
+
+export const updateFeatureValidator = {
+  bodySchema: z.object({"description":z.string().describe("Description of the feature").optional(),"archived":z.boolean().optional(),"project":z.string().describe("An associated project ID").optional(),"owner":z.string().optional(),"defaultValue":z.any().superRefine((x, ctx) => {
+    const schemas = [z.string(),z.number(),z.boolean()];
+    const errors = schemas.reduce(
+      (errors: z.ZodError[], schema) =>
+        ((result) => ("error" in result ? [...errors, result.error] : errors))(
+          schema.safeParse(x)
+        ),
+      []
+    );
+    if (schemas.length - errors.length !== 1) {
+      ctx.addIssue({
+        path: ctx.path,
+        code: "invalid_union",
+        unionErrors: errors,
+        message: "Invalid input: Should pass single schema",
+      });
+    }
+  }).optional(),"tags":z.array(z.string()).describe("List of associated tags. Will override tags completely with submitted list").optional(),"environments":z.record(z.object({"enabled":z.boolean(),"defaultValue":z.any().superRefine((x, ctx) => {
+    const schemas = [z.string(),z.number(),z.boolean()];
+    const errors = schemas.reduce(
+      (errors: z.ZodError[], schema) =>
+        ((result) => ("error" in result ? [...errors, result.error] : errors))(
+          schema.safeParse(x)
+        ),
+      []
+    );
+    if (schemas.length - errors.length !== 1) {
+      ctx.addIssue({
+        path: ctx.path,
+        code: "invalid_union",
+        unionErrors: errors,
+        message: "Invalid input: Should pass single schema",
+      });
+    }
+  }),"rules":z.array(z.union([z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string(),"coverage":z.number(),"hashAttribute":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"trackingKey":z.string().optional(),"hashAttribute":z.string().optional(),"namespace":z.any().optional(),"coverage":z.number().optional(),"value":z.array(z.object({"value":z.string(),"weight":z.number(),"name":z.string().optional()})).optional()})])),"definition":z.string().describe("A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model)").optional(),"draft":z.object({"enabled":z.boolean(),"defaultValue":z.any().superRefine((x, ctx) => {
+    const schemas = [z.string(),z.number(),z.boolean()];
+    const errors = schemas.reduce(
+      (errors: z.ZodError[], schema) =>
+        ((result) => ("error" in result ? [...errors, result.error] : errors))(
+          schema.safeParse(x)
+        ),
+      []
+    );
+    if (schemas.length - errors.length !== 1) {
+      ctx.addIssue({
+        path: ctx.path,
+        code: "invalid_union",
+        unionErrors: errors,
+        message: "Invalid input: Should pass single schema",
+      });
+    }
+  }),"rules":z.array(z.union([z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"value":z.string(),"coverage":z.number(),"hashAttribute":z.string()}),z.object({"description":z.string(),"condition":z.string(),"id":z.string(),"enabled":z.boolean(),"type":z.string(),"trackingKey":z.string().optional(),"hashAttribute":z.string().optional(),"namespace":z.any().optional(),"coverage":z.number().optional(),"value":z.array(z.object({"value":z.string(),"weight":z.number(),"name":z.string().optional()})).optional()})])),"definition":z.string().describe("A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model)").optional()}).optional()})).describe("Environments to update; those omitted will be left intact.").optional()}).strict(),
   querySchema: z.never(),
   paramsSchema: z.object({"id":z.string()}).strict(),
 };

@@ -14,16 +14,14 @@ export interface paths {
   "/features": {
     /** Get all features */
     get: operations["listFeatures"];
+    /** Create a single feature */
+    post: operations["postFeature"];
   };
   "/features/{id}": {
     /** Get a single feature */
     get: operations["getFeature"];
-    parameters: {
-        /** @description The id of the requested resource */
-      path: {
-        id: string;
-      };
-    };
+    /** Partially update a feature */
+    post: operations["updateFeature"];
   };
   "/features/{id}/toggle": {
     /** Toggle a feature in one or more environments */
@@ -306,12 +304,12 @@ export interface components {
       project: string;
       /** @enum {string} */
       valueType: "boolean" | "string" | "number" | "json";
-      defaultValue: string;
+      defaultValue: string | number | boolean;
       tags: (string)[];
       environments: {
         [key: string]: ({
           enabled: boolean;
-          defaultValue: string;
+          defaultValue: string | number | boolean;
           rules: ({
               description: string;
               condition: string;
@@ -352,7 +350,7 @@ export interface components {
           definition?: string;
           draft?: {
             enabled: boolean;
-            defaultValue: string;
+            defaultValue: string | number | boolean;
             rules: ({
                 description: string;
                 condition: string;
@@ -404,7 +402,7 @@ export interface components {
     };
     FeatureEnvironment: {
       enabled: boolean;
-      defaultValue: string;
+      defaultValue: string | number | boolean;
       rules: ({
           description: string;
           condition: string;
@@ -445,7 +443,7 @@ export interface components {
       definition?: string;
       draft?: {
         enabled: boolean;
-        defaultValue: string;
+        defaultValue: string | number | boolean;
         rules: ({
             description: string;
             condition: string;
@@ -955,12 +953,12 @@ export interface operations {
                 project: string;
                 /** @enum {string} */
                 valueType: "boolean" | "string" | "number" | "json";
-                defaultValue: string;
+                defaultValue: string | number | boolean;
                 tags: (string)[];
                 environments: {
                   [key: string]: ({
                     enabled: boolean;
-                    defaultValue: string;
+                    defaultValue: string | number | boolean;
                     rules: ({
                         description: string;
                         condition: string;
@@ -1001,7 +999,7 @@ export interface operations {
                     definition?: string;
                     draft?: {
                       enabled: boolean;
-                      defaultValue: string;
+                      defaultValue: string | number | boolean;
                       rules: ({
                           description: string;
                           condition: string;
@@ -1063,8 +1061,118 @@ export interface operations {
       };
     };
   };
-  getFeature: {
-    /** Get a single feature */
+  postFeature: {
+    /** Create a single feature */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description A unique key name for the feature. Feature keys can only include letters, numbers, hyphens, and underscores. */
+          id: string;
+          archived?: boolean;
+          /** @description Description of the feature */
+          description?: string;
+          /** @description Name of owner of the feature */
+          owner?: string;
+          /** @description An associated project ID */
+          project?: string;
+          /**
+           * @description The data type of the feature payload 
+           * @enum {string}
+           */
+          valueType?: "boolean" | "string" | "number" | "json";
+          defaultValue?: string | number | boolean;
+          /** @description List of associated tags */
+          tags?: (string)[];
+          /** @description A dictionary of environments that are enabled for this feature. Key of the environment settings object is the name of environment. Environments that are not specified will be disabled by default. */
+          environments?: {
+            [key: string]: ({
+              enabled: boolean;
+              defaultValue: string | number | boolean;
+              rules: ({
+                  description: string;
+                  condition: string;
+                  id: string;
+                  enabled: boolean;
+                  type: string;
+                  value: string;
+                } | {
+                  description: string;
+                  condition: string;
+                  id: string;
+                  enabled: boolean;
+                  type: string;
+                  value: string;
+                  coverage: number;
+                  hashAttribute: string;
+                } | {
+                  description: string;
+                  condition: string;
+                  id: string;
+                  enabled: boolean;
+                  type: string;
+                  trackingKey?: string;
+                  hashAttribute?: string;
+                  namespace?: {
+                    enabled: boolean;
+                    name: string;
+                    range: (number)[];
+                  };
+                  coverage?: number;
+                  value?: ({
+                      value: string;
+                      weight: number;
+                      name?: string;
+                    })[];
+                })[];
+              /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+              definition?: string;
+              draft?: {
+                enabled: boolean;
+                defaultValue: string | number | boolean;
+                rules: ({
+                    description: string;
+                    condition: string;
+                    id: string;
+                    enabled: boolean;
+                    type: string;
+                    value: string;
+                  } | {
+                    description: string;
+                    condition: string;
+                    id: string;
+                    enabled: boolean;
+                    type: string;
+                    value: string;
+                    coverage: number;
+                    hashAttribute: string;
+                  } | {
+                    description: string;
+                    condition: string;
+                    id: string;
+                    enabled: boolean;
+                    type: string;
+                    trackingKey?: string;
+                    hashAttribute?: string;
+                    namespace?: {
+                      enabled: boolean;
+                      name: string;
+                      range: (number)[];
+                    };
+                    coverage?: number;
+                    value?: ({
+                        value: string;
+                        weight: number;
+                        name?: string;
+                      })[];
+                  })[];
+                /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+                definition?: string;
+              };
+            }) | undefined;
+          };
+        };
+      };
+    };
     responses: {
       200: {
         content: {
@@ -1081,12 +1189,12 @@ export interface operations {
               project: string;
               /** @enum {string} */
               valueType: "boolean" | "string" | "number" | "json";
-              defaultValue: string;
+              defaultValue: string | number | boolean;
               tags: (string)[];
               environments: {
                 [key: string]: ({
                   enabled: boolean;
-                  defaultValue: string;
+                  defaultValue: string | number | boolean;
                   rules: ({
                       description: string;
                       condition: string;
@@ -1127,7 +1235,359 @@ export interface operations {
                   definition?: string;
                   draft?: {
                     enabled: boolean;
-                    defaultValue: string;
+                    defaultValue: string | number | boolean;
+                    rules: ({
+                        description: string;
+                        condition: string;
+                        id: string;
+                        enabled: boolean;
+                        type: string;
+                        value: string;
+                      } | {
+                        description: string;
+                        condition: string;
+                        id: string;
+                        enabled: boolean;
+                        type: string;
+                        value: string;
+                        coverage: number;
+                        hashAttribute: string;
+                      } | {
+                        description: string;
+                        condition: string;
+                        id: string;
+                        enabled: boolean;
+                        type: string;
+                        trackingKey?: string;
+                        hashAttribute?: string;
+                        namespace?: {
+                          enabled: boolean;
+                          name: string;
+                          range: (number)[];
+                        };
+                        coverage?: number;
+                        value?: ({
+                            value: string;
+                            weight: number;
+                            name?: string;
+                          })[];
+                      })[];
+                    /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+                    definition?: string;
+                  };
+                }) | undefined;
+              };
+              revision: {
+                version: number;
+                comment: string;
+                /** Format: date-time */
+                date: string;
+                publishedBy: string;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+  getFeature: {
+    /** Get a single feature */
+    parameters: {
+        /** @description The id of the requested resource */
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            feature: {
+              id: string;
+              /** Format: date-time */
+              dateCreated: string;
+              /** Format: date-time */
+              dateUpdated: string;
+              archived: boolean;
+              description: string;
+              owner: string;
+              project: string;
+              /** @enum {string} */
+              valueType: "boolean" | "string" | "number" | "json";
+              defaultValue: string | number | boolean;
+              tags: (string)[];
+              environments: {
+                [key: string]: ({
+                  enabled: boolean;
+                  defaultValue: string | number | boolean;
+                  rules: ({
+                      description: string;
+                      condition: string;
+                      id: string;
+                      enabled: boolean;
+                      type: string;
+                      value: string;
+                    } | {
+                      description: string;
+                      condition: string;
+                      id: string;
+                      enabled: boolean;
+                      type: string;
+                      value: string;
+                      coverage: number;
+                      hashAttribute: string;
+                    } | {
+                      description: string;
+                      condition: string;
+                      id: string;
+                      enabled: boolean;
+                      type: string;
+                      trackingKey?: string;
+                      hashAttribute?: string;
+                      namespace?: {
+                        enabled: boolean;
+                        name: string;
+                        range: (number)[];
+                      };
+                      coverage?: number;
+                      value?: ({
+                          value: string;
+                          weight: number;
+                          name?: string;
+                        })[];
+                    })[];
+                  /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+                  definition?: string;
+                  draft?: {
+                    enabled: boolean;
+                    defaultValue: string | number | boolean;
+                    rules: ({
+                        description: string;
+                        condition: string;
+                        id: string;
+                        enabled: boolean;
+                        type: string;
+                        value: string;
+                      } | {
+                        description: string;
+                        condition: string;
+                        id: string;
+                        enabled: boolean;
+                        type: string;
+                        value: string;
+                        coverage: number;
+                        hashAttribute: string;
+                      } | {
+                        description: string;
+                        condition: string;
+                        id: string;
+                        enabled: boolean;
+                        type: string;
+                        trackingKey?: string;
+                        hashAttribute?: string;
+                        namespace?: {
+                          enabled: boolean;
+                          name: string;
+                          range: (number)[];
+                        };
+                        coverage?: number;
+                        value?: ({
+                            value: string;
+                            weight: number;
+                            name?: string;
+                          })[];
+                      })[];
+                    /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+                    definition?: string;
+                  };
+                }) | undefined;
+              };
+              revision: {
+                version: number;
+                comment: string;
+                /** Format: date-time */
+                date: string;
+                publishedBy: string;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+  updateFeature: {
+    /** Partially update a feature */
+    parameters: {
+        /** @description The id of the requested resource */
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Description of the feature */
+          description?: string;
+          archived?: boolean;
+          /** @description An associated project ID */
+          project?: string;
+          owner?: string;
+          defaultValue?: string | number | boolean;
+          /** @description List of associated tags. Will override tags completely with submitted list */
+          tags?: (string)[];
+          /** @description Environments to update; those omitted will be left intact. */
+          environments?: {
+            [key: string]: ({
+              enabled: boolean;
+              defaultValue: string | number | boolean;
+              rules: ({
+                  description: string;
+                  condition: string;
+                  id: string;
+                  enabled: boolean;
+                  type: string;
+                  value: string;
+                } | {
+                  description: string;
+                  condition: string;
+                  id: string;
+                  enabled: boolean;
+                  type: string;
+                  value: string;
+                  coverage: number;
+                  hashAttribute: string;
+                } | {
+                  description: string;
+                  condition: string;
+                  id: string;
+                  enabled: boolean;
+                  type: string;
+                  trackingKey?: string;
+                  hashAttribute?: string;
+                  namespace?: {
+                    enabled: boolean;
+                    name: string;
+                    range: (number)[];
+                  };
+                  coverage?: number;
+                  value?: ({
+                      value: string;
+                      weight: number;
+                      name?: string;
+                    })[];
+                })[];
+              /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+              definition?: string;
+              draft?: {
+                enabled: boolean;
+                defaultValue: string | number | boolean;
+                rules: ({
+                    description: string;
+                    condition: string;
+                    id: string;
+                    enabled: boolean;
+                    type: string;
+                    value: string;
+                  } | {
+                    description: string;
+                    condition: string;
+                    id: string;
+                    enabled: boolean;
+                    type: string;
+                    value: string;
+                    coverage: number;
+                    hashAttribute: string;
+                  } | {
+                    description: string;
+                    condition: string;
+                    id: string;
+                    enabled: boolean;
+                    type: string;
+                    trackingKey?: string;
+                    hashAttribute?: string;
+                    namespace?: {
+                      enabled: boolean;
+                      name: string;
+                      range: (number)[];
+                    };
+                    coverage?: number;
+                    value?: ({
+                        value: string;
+                        weight: number;
+                        name?: string;
+                      })[];
+                  })[];
+                /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+                definition?: string;
+              };
+            }) | undefined;
+          };
+        };
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            feature: {
+              id: string;
+              /** Format: date-time */
+              dateCreated: string;
+              /** Format: date-time */
+              dateUpdated: string;
+              archived: boolean;
+              description: string;
+              owner: string;
+              project: string;
+              /** @enum {string} */
+              valueType: "boolean" | "string" | "number" | "json";
+              defaultValue: string | number | boolean;
+              tags: (string)[];
+              environments: {
+                [key: string]: ({
+                  enabled: boolean;
+                  defaultValue: string | number | boolean;
+                  rules: ({
+                      description: string;
+                      condition: string;
+                      id: string;
+                      enabled: boolean;
+                      type: string;
+                      value: string;
+                    } | {
+                      description: string;
+                      condition: string;
+                      id: string;
+                      enabled: boolean;
+                      type: string;
+                      value: string;
+                      coverage: number;
+                      hashAttribute: string;
+                    } | {
+                      description: string;
+                      condition: string;
+                      id: string;
+                      enabled: boolean;
+                      type: string;
+                      trackingKey?: string;
+                      hashAttribute?: string;
+                      namespace?: {
+                        enabled: boolean;
+                        name: string;
+                        range: (number)[];
+                      };
+                      coverage?: number;
+                      value?: ({
+                          value: string;
+                          weight: number;
+                          name?: string;
+                        })[];
+                    })[];
+                  /** @description A JSON stringified [FeatureDefinition](#tag/FeatureDefinition_model) */
+                  definition?: string;
+                  draft?: {
+                    enabled: boolean;
+                    defaultValue: string | number | boolean;
                     rules: ({
                         description: string;
                         condition: string;
@@ -1210,12 +1670,12 @@ export interface operations {
               project: string;
               /** @enum {string} */
               valueType: "boolean" | "string" | "number" | "json";
-              defaultValue: string;
+              defaultValue: string | number | boolean;
               tags: (string)[];
               environments: {
                 [key: string]: ({
                   enabled: boolean;
-                  defaultValue: string;
+                  defaultValue: string | number | boolean;
                   rules: ({
                       description: string;
                       condition: string;
@@ -1256,7 +1716,7 @@ export interface operations {
                   definition?: string;
                   draft?: {
                     enabled: boolean;
-                    defaultValue: string;
+                    defaultValue: string | number | boolean;
                     rules: ({
                         description: string;
                         condition: string;
@@ -2842,7 +3302,9 @@ export type ApiSavedGroup = components["schemas"]["SavedGroup"];
 
 // Operations
 export type ListFeaturesResponse = operations["listFeatures"]["responses"]["200"]["content"]["application/json"];
+export type PostFeatureResponse = operations["postFeature"]["responses"]["200"]["content"]["application/json"];
 export type GetFeatureResponse = operations["getFeature"]["responses"]["200"]["content"]["application/json"];
+export type UpdateFeatureResponse = operations["updateFeature"]["responses"]["200"]["content"]["application/json"];
 export type ToggleFeatureResponse = operations["toggleFeature"]["responses"]["200"]["content"]["application/json"];
 export type ListProjectsResponse = operations["listProjects"]["responses"]["200"]["content"]["application/json"];
 export type GetProjectResponse = operations["getProject"]["responses"]["200"]["content"]["application/json"];
